@@ -30,7 +30,7 @@ const Gameboard = (function () {
 
 // Object that will handle the game flow and logic
 const GameController = (function (
-	players = [CreatePlayer("Tom", "O"), CreatePlayer("Jerry", "X")]
+	players = [CreatePlayer("Tom", "O", "human"), CreateBot("Jerry", "X", "bot")]
 ) {
 	let currentPlayer = players[0];
 	let isPlayerTurnCompleted = false;
@@ -45,16 +45,14 @@ const GameController = (function (
 		isPlayerTurnCompleted = boolean ? true : false;
 	}
 
-	function playRound(cellRowPosition, cellColumnPosition) {
-		Gameboard.putMarkerOnBoard(
-			getCurrentPlayer().getMarker(),
-			cellRowPosition,
-			cellColumnPosition
-		);
+	function handleRound() {
+		// 1. Get player move and update board
+		currentPlayer.playRound();
 
-		// Check if there is a winner
+		// 2. Check available patterns if there is a winner
 		checkPatternForWinner();
 
+		// 3. Switch to next player if there is no winner (next turn)
 		switchCurrentPlayer();
 	}
 
@@ -73,6 +71,8 @@ const GameController = (function (
 			boardRowPatterns.map((row, i) => row[boardLength - 1 - i]), // Anti-diagonal pattern values
 		];
 
+		console.log(boardRowPatterns);
+
 		const boardPatterns = [
 			...boardRowPatterns,
 			...boardColumnPatterns,
@@ -80,12 +80,13 @@ const GameController = (function (
 		];
 
 		for (let i = 0; i < boardPatterns.length; i++) {
+			// Compare each pattern fetched to the target pattern
 			const isWinnerPatternFound = boardPatterns[i].every(
 				(cellValue, i) => cellValue === targetPatternForWin[i]
 			);
 
 			if (isWinnerPatternFound) {
-				console.log("You Win");
+				console.log(getCurrentPlayer().getName() + " won.");
 				return true;
 			}
 		}
@@ -98,17 +99,61 @@ const GameController = (function (
 	return {
 		getCurrentPlayer,
 		switchCurrentPlayer,
-		playRound,
+		handleRound,
 		confirmPlayerTurn,
 	};
 })();
 
 // Object that will handle the Player properties
-function CreatePlayer(name, marker) {
+function CreatePlayer(name, marker, playerType) {
+	function playRound() {
+		// Prompt user for the position of his/her move
+		const cellRowColumnPosition = window
+			.prompt("Enter cell position: (<row><column>)")
+			.split("")
+			.map(Number);
+
+		Gameboard.putMarkerOnBoard(
+			getMarker(),
+			cellRowColumnPosition[0],
+			cellRowColumnPosition[1]
+		);
+	}
+
+	// Data Fetching Methods
 	const getName = () => name;
 	const getMarker = () => marker;
+	const getPlayerType = () => playerType;
+	//
 
-	return { getName, getMarker };
+	return { getName, getMarker, getPlayerType, playRound };
+}
+
+// Object that will handle the Bot properties
+function CreateBot(name, marker, playerType) {
+	// Inherit similar values/methods to Player object
+	const { getName, getMarker, getPlayerType } = CreatePlayer(
+		name,
+		marker,
+		playerType
+	);
+
+	async function playRound() {
+		const botMovePosition = [generateRandomMove(2), generateRandomMove(2)];
+
+		Gameboard.putMarkerOnBoard(
+			getMarker(),
+			botMovePosition[0],
+			botMovePosition[1]
+		);
+	}
+
+	// Will generate random numerical values base on the range (return = 0 - range)
+	function generateRandomMove(range) {
+		return Math.floor(Math.random() * (range + 1));
+	}
+
+	return { getName, getMarker, getPlayerType, playRound };
 }
 
 // Object that will handle the individual Cells of the Gameboard
