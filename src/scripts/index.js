@@ -17,15 +17,46 @@ const Gameboard = (function () {
 		board[cellRowPosition][cellColumnPosition].addMarker(marker);
 	}
 
+	function clearBoardValues() {
+		board.map((row) => row.map((cell) => cell.clearValue()));
+	}
+
 	// Data Fetching Methods
 	const getBoard = () => board;
 
 	const getBoardResult = () => {
 		return board.map((row) => row.map((cell) => cell.getValue())); // Get board with updated data
 	};
+
+	const getAllBoardPatterns = () => {
+		const boardLength = getBoard().length;
+
+		const boardRowPatterns = getBoardResult();
+		const boardColumnPatterns = [0, 1, 2].map(
+			(colIndex) => boardRowPatterns.map((row) => row[colIndex]) // Get the column pattern values of the board (top to bottom)
+		);
+		const boardDiagonalPatterns = [
+			boardRowPatterns.map((row, i) => row[i]), // Diagonal pattern values
+			boardRowPatterns.map((row, i) => row[boardLength - 1 - i]), // Anti-diagonal pattern values
+		];
+
+		console.table(boardRowPatterns);
+
+		return [
+			...boardRowPatterns,
+			...boardColumnPatterns,
+			...boardDiagonalPatterns,
+		];
+	};
 	//
 
-	return { putMarkerOnBoard, getBoard, getBoardResult };
+	return {
+		putMarkerOnBoard,
+		getBoard,
+		getBoardResult,
+		getAllBoardPatterns,
+		clearBoardValues,
+	};
 })();
 
 // Object that will handle the game flow and logic
@@ -34,6 +65,15 @@ const GameController = (function (
 ) {
 	let currentPlayer = players[0];
 	let isPlayerTurnCompleted = false;
+	let movesMade = [];
+
+	function handleRound() {
+		currentPlayer.playRound();
+
+		checkPatternForWinnerOrTie();
+
+		switchCurrentPlayer();
+	}
 
 	function switchCurrentPlayer() {
 		if (isPlayerTurnCompleted) {
@@ -45,55 +85,46 @@ const GameController = (function (
 		isPlayerTurnCompleted = boolean ? true : false;
 	}
 
-	function handleRound() {
-		// 1. Get player move and update board
-		currentPlayer.playRound();
-
-		// 2. Check available patterns if there is a winner
-		checkPatternForWinner();
-
-		// 3. Switch to next player if there is no winner (next turn)
-		switchCurrentPlayer();
-	}
-
-	function checkPatternForWinner() {
-		const boardLength = Gameboard.getBoard().length;
+	function checkPatternForWinnerOrTie() {
 		const targetPatternForWin = [1, 2, 3].map(() =>
 			getCurrentPlayer().getMarker()
 		);
 
-		const boardRowPatterns = Gameboard.getBoardResult();
-		const boardColumnPatterns = [0, 1, 2].map(
-			(colIndex) => boardRowPatterns.map((row) => row[colIndex]) // Get the column pattern values of the board (top to bottom)
-		);
-		const boardDiagonalPatterns = [
-			boardRowPatterns.map((row, i) => row[i]), // Diagonal pattern values
-			boardRowPatterns.map((row, i) => row[boardLength - 1 - i]), // Anti-diagonal pattern values
-		];
-
-		console.log(boardRowPatterns);
-
-		const boardPatterns = [
-			...boardRowPatterns,
-			...boardColumnPatterns,
-			...boardDiagonalPatterns,
-		];
+		const boardPatterns = Gameboard.getAllBoardPatterns();
 
 		for (let i = 0; i < boardPatterns.length; i++) {
-			// Compare each pattern fetched to the target pattern
+			// Compare all of the pattern to the target pattern
 			const isWinnerPatternFound = boardPatterns[i].every(
 				(cellValue, i) => cellValue === targetPatternForWin[i]
 			);
 
 			if (isWinnerPatternFound) {
 				console.log(getCurrentPlayer().getName() + " won.");
-				return true;
+				console.log("Game will now reset.");
+				return resetGame();
 			}
 		}
+
+		// Board has been filled up - Tie
+		if (movesMade.length === 9) {
+			console.log("It's a tie. No one won.");
+			console.log("Game will now reset.");
+			resetGame();
+		}
+	}
+
+	function addMovesMade(cellPosition) {
+		movesMade.push(cellPosition);
+	}
+
+	function resetGame() {
+		Gameboard.clearBoardValues();
+		movesMade.length = 0; // Clear all the moves made;
 	}
 
 	// Data Fetching Methods
 	const getCurrentPlayer = () => currentPlayer;
+	const getMovesMade = () => movesMade;
 	//
 
 	return {
@@ -101,6 +132,9 @@ const GameController = (function (
 		switchCurrentPlayer,
 		handleRound,
 		confirmPlayerTurn,
+		addMovesMade,
+		getMovesMade,
+		resetGame,
 	};
 })();
 
@@ -108,16 +142,20 @@ const GameController = (function (
 function CreatePlayer(name, marker, playerType) {
 	function playRound() {
 		// Prompt user for the position of his/her move
-		const cellRowColumnPosition = window
+		const [moveRowPosition, moveColumnPosition] = window
 			.prompt("Enter cell position: (<row><column>)")
 			.split("")
 			.map(Number);
 
+		console.log(moveRowPosition, moveColumnPosition);
+
 		Gameboard.putMarkerOnBoard(
 			getMarker(),
-			cellRowColumnPosition[0],
-			cellRowColumnPosition[1]
+			moveRowPosition,
+			moveColumnPosition
 		);
+
+		GameController.addMovesMade(`${moveRowPosition}${moveColumnPosition}`);
 	}
 
 	// Data Fetching Methods
@@ -138,19 +176,56 @@ function CreateBot(name, marker, playerType) {
 		playerType
 	);
 
-	async function playRound() {
-		const botMovePosition = [generateRandomMove(2), generateRandomMove(2)];
+	function playRound() {
+		const movesMade = GameController.getMovesMade();
+
+		let [botMoveRowPosition, botMoveColumnPosition] = generateRandomMove(2);
+		let isMoveUnique = false;
+
+		console.log(GameController.getMovesMade());
+
+		// This will iterate until Bot generated move is unique
+		do {
+			let existingMoveCompareResults = [];
+
+			for (let i = 0; i < movesMade.length; i++) {
+				// Compare the current bot move to all the moves made
+				console.log(
+					movesMade[i] + " = " + `${botMoveRowPosition}${botMoveColumnPosition}`
+				);
+				if (movesMade[i] === `${botMoveRowPosition}${botMoveColumnPosition}`) {
+					existingMoveCompareResults.push(true);
+				} else {
+					existingMoveCompareResults.push(false);
+				}
+			}
+
+			isMoveUnique = existingMoveCompareResults.includes(true) ? false : true;
+
+			if (!isMoveUnique) {
+				[botMoveRowPosition, botMoveColumnPosition] = generateRandomMove(2);
+			}
+		} while (!isMoveUnique);
+		isMoveUnique = false; // Reset the unique move flag
 
 		Gameboard.putMarkerOnBoard(
 			getMarker(),
-			botMovePosition[0],
-			botMovePosition[1]
+			botMoveRowPosition,
+			botMoveColumnPosition
+		);
+
+		GameController.addMovesMade(
+			`${botMoveRowPosition}${botMoveColumnPosition}`
 		);
 	}
 
 	// Will generate random numerical values base on the range (return = 0 - range)
 	function generateRandomMove(range) {
-		return Math.floor(Math.random() * (range + 1));
+		const targetRange = range + 1;
+		return [
+			Math.floor(Math.random() * targetRange),
+			Math.floor(Math.random() * targetRange),
+		];
 	}
 
 	return { getName, getMarker, getPlayerType, playRound };
@@ -170,9 +245,13 @@ function Cell() {
 		}
 	}
 
+	function clearValue() {
+		value = "_";
+	}
+
 	// Data Fetching Methods
 	const getValue = () => value;
 	//
 
-	return { addMarker, getValue };
+	return { addMarker, getValue, clearValue };
 }
