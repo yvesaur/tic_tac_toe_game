@@ -15,6 +15,8 @@ A Tic-tac-toe game implemented in web using modular design pattern (IIFEs and Fa
   - Bot should not make a move that already happened ✅
 - Create an object that will handle the display/DOM logic of the game
   - Board UI
+    - Start Game Page (Home page)
+    - Game page
   - User/s interactivity with the board to put X and O on the cells
   - Allow users to put names
   - Start/restart game button
