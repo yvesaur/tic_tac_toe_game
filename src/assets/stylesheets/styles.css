@@ -1,0 +1,131 @@
+/**** RESETS ****/
+button {
+	appearance: none;
+	outline: none;
+	border: none;
+}
+
+h1 {
+	margin: 0;
+	padding: 0;
+}
+
+input[type="text"] {
+	border: none;
+}
+
+fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+	min-inline-size: 0; /* helps reset width in some browsers */
+}
+/***************/
+
+/**** MOBILE ****/
+:root {
+	--font-fallbacks: "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+	font-family: "Winky Rough", var(--font-fallbacks);
+	font-size: 1rem;
+
+	color: var(--on-surface);
+
+	--shadow-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+	--shadow-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+	--shadow-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+	--shadow-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+	--shadow-5: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	background-color: var(--surface);
+
+	height: 100dvh;
+	width: 100dvw;
+}
+
+header {
+	width: 90%;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+header > img {
+	height: auto;
+	width: 40%;
+}
+
+header > h1 {
+	font-size: 3rem;
+}
+
+form {
+	width: 90%;
+	margin-top: 3rem;
+}
+
+form > fieldset > div:first-child {
+	margin-bottom: 1.5rem;
+}
+
+form > fieldset > div:last-child {
+	margin-bottom: 2rem;
+}
+
+form > fieldset .name-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+fieldset .name-label > .player-type-buttons {
+	color: var(--outline);
+}
+
+.name-label > .player-type-buttons > span[data-active="true"] {
+	color: var(--tertiary);
+}
+
+.name-label > .player-type-buttons > span:hover {
+	color: var(--tertiary);
+	cursor: pointer;
+}
+
+fieldset > div > input[type="text"] {
+	background-color: var(--surface-container-lowest);
+
+	padding: 0.5rem;
+
+	width: 100%;
+
+	border: 2px solid var(--outline);
+	border-radius: 0.25rem;
+}
+
+form > .start-game-button {
+	padding: 0.75rem 1rem;
+	display: block;
+	margin: 0 auto;
+
+	width: 80%;
+
+	background-color: var(--primary-container);
+	color: var(--on-primary-container);
+
+	font-weight: bold;
+
+	border-radius: 0.75rem;
+	box-shadow: var(--shadow-1);
+}
+
+/***************/
