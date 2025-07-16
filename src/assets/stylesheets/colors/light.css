@@ -2,5 +2,15 @@
 
 .light {
 	--primary: #39693b;
+	--primary-container: #baf0b6;
+	--on-primary-container: #215025;
+
+	--tertiary: #39656b;
+
 	--surface: #f7fbf1;
+	--on-surface: #181d17;
+	--on-surface-variant: #424940;
+	--surface-container-lowest: #ffffff;
+
+	--outline: #72796f;
 }

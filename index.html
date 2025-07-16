@@ -35,6 +35,10 @@
 		<link
 			href="https://fonts.googleapis.com/css2?family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap"
 			rel="stylesheet" />
+
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
 	</head>
 	<body class="light">
 		<header>
@@ -43,5 +47,50 @@
 				alt="Website logo" />
 			<h1>Tic-tac-toe</h1>
 		</header>
+		<form action="">
+			<fieldset>
+				<div>
+					<div class="name-label">
+						<label for="player1_name">Player 1</label>
+						<div class="player-type-buttons">
+							<span
+								data-active="true"
+								class="material-symbols-outlined">
+								person
+							</span>
+							<span class="material-symbols-outlined"> robot_2 </span>
+						</div>
+					</div>
+					<input
+						type="text"
+						name="player1_name"
+						id="player1_name"
+						placeholder="Enter your display name" />
+				</div>
+				<div>
+					<div class="name-label">
+						<label for="player2_name">Player 2</label>
+						<div class="player-type-buttons">
+							<span
+								data-active="true"
+								class="material-symbols-outlined">
+								person
+							</span>
+							<span class="material-symbols-outlined"> robot_2 </span>
+						</div>
+					</div>
+					<input
+						type="text"
+						name="player2_name"
+						id="player2_name"
+						placeholder="Enter your display name" />
+				</div>
+			</fieldset>
+			<button
+				class="start-game-button"
+				type="submit">
+				Start Game
+			</button>
+		</form>
 	</body>
 </html>
