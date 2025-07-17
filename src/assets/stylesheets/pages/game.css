@@ -1,0 +1,41 @@
+/**** MOBILE ****/
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	background-color: var(--surface);
+
+	height: 100dvh;
+	width: 100dvw;
+}
+
+body > header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+
+	width: 90%;
+
+	position: fixed;
+	top: 0;
+
+	padding: 1rem;
+}
+
+body > header > img {
+	width: 4rem;
+	height: auto;
+}
+
+body > main {
+	width: 90%;
+}
+
+body > main > .players-stats {
+	display: flex;
+	justify-content: space-between;
+}
+/***************/
