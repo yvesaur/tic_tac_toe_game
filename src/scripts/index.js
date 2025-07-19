@@ -60,12 +60,58 @@ const Gameboard = (function () {
 })();
 
 // Object that will handle the game flow and logic
-const GameController = (function (
-	players = [CreatePlayer("Tom", "O", "human"), CreateBot("Jerry", "X", "bot")]
-) {
-	let currentPlayer = players[0];
+const GameController = (function () {
+	const players = [];
+	let currentPlayer;
 	let isPlayerTurnCompleted = false;
 	let movesMade = [];
+
+	function addSubmitListenerToUserInfoForm() {
+		const userInfoForm = document.querySelector(".user-info-form");
+		const playerTypeOptions = document.querySelectorAll(
+			`input[type="radio"][name^="player"][value="bot"], input[type="radio"][name^="player"][value="human"]`
+		);
+		const playerNameInputs = {
+			player1_type: document.getElementById("player1_name"),
+			player2_type: document.getElementById("player2_name"),
+		};
+
+		playerTypeOptions.forEach((option) => {
+			option.addEventListener("change", () => {
+				if (!option.checked) return;
+
+				const nameInput = playerNameInputs[option.name];
+				if (!nameInput) return;
+
+				if (option.value === "bot") {
+					nameInput.disabled = true;
+					nameInput.value = "Bot";
+				} else {
+					nameInput.disabled = false;
+				}
+			});
+		});
+
+		userInfoForm.addEventListener("submit", (e) => {
+			e.preventDefault();
+
+			userInfoFormData = new FormData(userInfoForm);
+			const player1Name = userInfoFormData.get("player1_name");
+			const player1Type = userInfoFormData.get("player1_type");
+			const player2Name = userInfoFormData.get("player2_name");
+			const player2Type = userInfoFormData.get("player2_type");
+
+			players.push(CreatePlayer(player1Name, "O", "human"));
+			players.push(CreatePlayer(player2Name, "X", "bot"));
+
+			currentPlayer = players[0];
+
+			console.log(`P1: ${player1Name}`);
+			console.log(`P1 Type: ${player1Type}`);
+			console.log(`P2: ${player2Name}`);
+			console.log(`P2 Type: ${player2Type}`);
+		});
+	}
 
 	function handleRound() {
 		currentPlayer.playRound();
@@ -126,6 +172,9 @@ const GameController = (function (
 	const getCurrentPlayer = () => currentPlayer;
 	const getMovesMade = () => movesMade;
 	//
+
+	// Initializations
+	addSubmitListenerToUserInfoForm();
 
 	return {
 		getCurrentPlayer,

@@ -50,18 +50,40 @@
 				alt="Website logo" />
 			<h1>Tic-tac-toe</h1>
 		</header>
-		<form action="./src/pages/game.html">
+		<form
+			autocomplete="off"
+			action="./src/pages/game.html"
+			class="user-info-form">
 			<fieldset>
 				<div>
 					<div class="name-label">
 						<label for="player1_name">Player 1</label>
-						<div class="player-type-buttons">
-							<span
-								data-active="true"
-								class="material-symbols-outlined">
-								person
+						<div class="player-type-radio">
+							<span>
+								<input
+									type="radio"
+									name="player1_type"
+									id="player1HumanTypeOption"
+									value="human"
+									checked />
+								<label
+									for="player1HumanTypeOption"
+									class="material-symbols-outlined">
+									person
+								</label>
 							</span>
-							<span class="material-symbols-outlined"> robot_2 </span>
+							<span>
+								<input
+									type="radio"
+									name="player1_type"
+									id="player1RobotTypeOption"
+									value="bot" />
+								<label
+									for="player1RobotTypeOption"
+									class="material-symbols-outlined player1RobotTypeOption">
+									robot_2
+								</label>
+							</span>
 						</div>
 					</div>
 					<input
@@ -73,13 +95,32 @@
 				<div>
 					<div class="name-label">
 						<label for="player2_name">Player 2</label>
-						<div class="player-type-buttons">
-							<span
-								data-active="true"
-								class="material-symbols-outlined">
-								person
+						<div class="player-type-radio">
+							<span>
+								<input
+									type="radio"
+									name="player2_type"
+									id="player2HumanTypeOption"
+									value="human"
+									checked />
+								<label
+									for="player2HumanTypeOption"
+									class="material-symbols-outlined">
+									person
+								</label>
 							</span>
-							<span class="material-symbols-outlined"> robot_2 </span>
+							<span>
+								<input
+									type="radio"
+									name="player2_type"
+									id="player2RobotTypeOption"
+									value="bot" />
+								<label
+									for="player2RobotTypeOption"
+									class="material-symbols-outlined player2RobotTypeOption">
+									robot_2
+								</label>
+							</span>
 						</div>
 					</div>
 					<input
