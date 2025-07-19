@@ -21,4 +21,5 @@ A Tic-tac-toe game implemented in web using modular design pattern (IIFEs and Fa
   - Display results
 - Create UI pages
   - Start Game Page (Home page) ✅
-  - Game page
+  - Game page ✅
+  - Dialog Modal to display results

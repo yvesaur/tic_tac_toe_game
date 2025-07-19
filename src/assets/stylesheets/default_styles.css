@@ -1,11 +1,18 @@
 /**** RESETS ****/
+body {
+	width: 100dvw;
+	height: 100dvh;
+}
+
 button {
 	appearance: none;
 	outline: none;
 	border: none;
 }
 
-h1 {
+h1,
+h2,
+p {
 	margin: 0;
 	padding: 0;
 }

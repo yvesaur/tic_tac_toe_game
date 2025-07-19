@@ -6,9 +6,6 @@ body {
 	align-items: center;
 
 	background-color: var(--surface);
-
-	height: 100dvh;
-	width: 100dvw;
 }
 
 header {
