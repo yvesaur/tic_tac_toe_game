@@ -1,0 +1,88 @@
+/**** MOBILE ****/
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	background-color: var(--surface);
+}
+
+body > header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+
+	width: 100dvw;
+
+	position: fixed;
+	top: 0;
+
+	padding: 1rem;
+}
+
+body > header > img {
+	width: 4rem;
+	height: auto;
+}
+
+body > main {
+	width: 100dvw;
+	padding: 0 1.5rem;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	gap: 0.75rem;
+}
+
+body > main > .players-stats {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.players-stats > p {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+span.person-icon,
+span.robot-icon {
+	font-size: 1rem;
+	color: var(--tertiary);
+}
+
+body > main > .boardgame {
+	height: 300px;
+	width: 300px;
+
+	display: grid;
+	gap: 2px;
+	grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.boardgame > div {
+	outline: 2px ridge black;
+}
+
+main > .active-player-display {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	margin-top: 1rem;
+}
+
+main > .active-player-display > h2 {
+	font-weight: normal;
+	font-size: 1.25rem;
+}
+
+main > .active-player-display > p {
+	font-size: 6rem;
+}
+/***************/
