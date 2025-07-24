@@ -26,6 +26,9 @@
 			href="./src/assets/stylesheets/index.css" />
 		<link
 			rel="stylesheet"
+			href="./src/assets/stylesheets/pages/game.css" />
+		<link
+			rel="stylesheet"
 			href="./src/assets/stylesheets/colors/light.css" />
 
 		<link
@@ -50,43 +53,86 @@
 				alt="Website logo" />
 			<h1>Tic-tac-toe</h1>
 		</header>
-		<form action="./src/pages/game.html">
+		<form
+			autocomplete="off"
+			action="./src/pages/game.html"
+			class="user-info-form">
 			<fieldset>
 				<div>
 					<div class="name-label">
 						<label for="player1_name">Player 1</label>
-						<div class="player-type-buttons">
-							<span
-								data-active="true"
-								class="material-symbols-outlined">
-								person
+						<div class="player-type-radio">
+							<span>
+								<input
+									type="radio"
+									name="player1_type"
+									id="player1HumanTypeOption"
+									value="human"
+									checked />
+								<label
+									for="player1HumanTypeOption"
+									class="material-symbols-outlined">
+									person
+								</label>
 							</span>
-							<span class="material-symbols-outlined"> robot_2 </span>
+							<span>
+								<input
+									type="radio"
+									name="player1_type"
+									id="player1RobotTypeOption"
+									value="bot" />
+								<label
+									for="player1RobotTypeOption"
+									class="material-symbols-outlined player1RobotTypeOption">
+									robot_2
+								</label>
+							</span>
 						</div>
 					</div>
 					<input
 						type="text"
 						name="player1_name"
 						id="player1_name"
-						placeholder="Enter your display name" />
+						placeholder="Enter your display name"
+						required />
 				</div>
 				<div>
 					<div class="name-label">
 						<label for="player2_name">Player 2</label>
-						<div class="player-type-buttons">
-							<span
-								data-active="true"
-								class="material-symbols-outlined">
-								person
+						<div class="player-type-radio">
+							<span>
+								<input
+									type="radio"
+									name="player2_type"
+									id="player2HumanTypeOption"
+									value="human"
+									checked />
+								<label
+									for="player2HumanTypeOption"
+									class="material-symbols-outlined">
+									person
+								</label>
 							</span>
-							<span class="material-symbols-outlined"> robot_2 </span>
+							<span>
+								<input
+									type="radio"
+									name="player2_type"
+									id="player2RobotTypeOption"
+									value="bot" />
+								<label
+									for="player2RobotTypeOption"
+									class="material-symbols-outlined player2RobotTypeOption">
+									robot_2
+								</label>
+							</span>
 						</div>
 					</div>
 					<input
 						type="text"
 						name="player2_name"
 						id="player2_name"
-						placeholder="Enter your display name" />
+						placeholder="Enter your display name"
+						required />
 				</div>
 			</fieldset>
 			<button
@@ -95,5 +141,37 @@
 				Start Game
 			</button>
 		</form>
+
+		<main class="gameboard-component">
+			<div class="players-stats">
+				<p>
+					<span
+						data-active="true"
+						class="material-symbols-outlined person-icon">
+						person
+					</span>
+					<span><span class="player1-name">Yves</span> - 0</span>
+				</p>
+				<p>
+					<span>0 - <span class="player2-name">Bot</span></span>
+					<span class="material-symbols-outlined robot-icon"> robot_2 </span>
+				</p>
+			</div>
+			<div class="gameboard">
+				<div data-cell-location="00"></div>
+				<div data-cell-location="01"></div>
+				<div data-cell-location="02"></div>
+				<div data-cell-location="10"></div>
+				<div data-cell-location="11"></div>
+				<div data-cell-location="12"></div>
+				<div data-cell-location="20"></div>
+				<div data-cell-location="21"></div>
+				<div data-cell-location="22"></div>
+			</div>
+			<div class="active-player-display">
+				<h2><span class="current-player-name">Yves</span> turn</h2>
+				<p class="current-player-marker">O</p>
+			</div>
+		</main>
 	</body>
 </html>

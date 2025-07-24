@@ -45,15 +45,23 @@ form > fieldset .name-label {
 	gap: 0.5rem;
 }
 
-fieldset .name-label > .player-type-buttons {
+fieldset .name-label > .player-type-radio {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+
 	color: var(--outline);
 }
 
-.name-label > .player-type-buttons > span[data-active="true"] {
+.name-label > .player-type-radio input[type="radio"] {
+	appearance: none;
+}
+
+.player-type-radio input[type="radio"]:checked + label {
 	color: var(--tertiary);
 }
 
-.name-label > .player-type-buttons > span:hover {
+.name-label > .player-type-radio > span:hover {
 	color: var(--tertiary);
 	cursor: pointer;
 }
@@ -67,6 +75,19 @@ fieldset > div > input[type="text"] {
 
 	border: 2px solid var(--outline);
 	border-radius: 0.25rem;
+}
+
+fieldset > div > input[type="text"]:read-only {
+	background-color: var(--surface-container);
+	opacity: 60%;
+}
+
+fieldset > div > input[type="text"]:user-valid {
+	border: 2px solid var(--primary);
+}
+
+fieldset > div > input[type="text"]:user-invalid {
+	border: 2px solid var(--error);
 }
 
 form > .start-game-button {

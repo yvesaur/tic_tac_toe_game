@@ -5,12 +5,21 @@
 	--primary-container: #baf0b6;
 	--on-primary-container: #215025;
 
+	--secondary: #52634f;
+
 	--tertiary: #39656b;
 
 	--surface: #f7fbf1;
+	--surface-dim: #d7dbd3;
 	--on-surface: #181d17;
 	--on-surface-variant: #424940;
+
+	--surface-container: #ebefe6;
+	--surface-container-low: #f1f5ec;
 	--surface-container-lowest: #ffffff;
 
 	--outline: #72796f;
+	--outline-variant: #c2c9bd;
+
+	--error: #ba1a1a;
 }
