@@ -68,53 +68,62 @@ const GameController = (function () {
 
 	function addSubmitListenerToUserInfoForm() {
 		const userInfoForm = document.querySelector(".user-info-form");
-		const playerTypeOptions = document.querySelectorAll(
-			`input[type="radio"][name^="player"][value="bot"], input[type="radio"][name^="player"][value="human"]`
-		);
-		const playerNameInputs = {
-			player1_type: document.getElementById("player1_name"),
-			player2_type: document.getElementById("player2_name"),
-		};
 
-		playerTypeOptions.forEach((option) => {
-			option.addEventListener("change", () => {
-				if (!option.checked) return;
+		if (userInfoForm) {
+			const playerTypeOptions = document.querySelectorAll(
+				`input[type="radio"][name^="player"][value="bot"], input[type="radio"][name^="player"][value="human"]`
+			);
+			const playerNameInputs = {
+				player1_type: document.getElementById("player1_name"),
+				player2_type: document.getElementById("player2_name"),
+			};
 
-				const nameInput = playerNameInputs[option.name];
-				if (!nameInput) return;
+			playerTypeOptions.forEach((option) => {
+				option.addEventListener("change", () => {
+					if (!option.checked) return;
 
-				if (option.value === "bot") {
-					nameInput.disabled = true;
-					nameInput.value = "Bot";
-				} else {
-					nameInput.disabled = false;
-				}
+					const nameInput = playerNameInputs[option.name];
+					if (!nameInput) return;
+
+					if (option.value === "bot") {
+						nameInput.readOnly = true;
+						nameInput.value = "bot";
+					} else {
+						nameInput.readOnly = false;
+					}
+				});
 			});
-		});
 
-		userInfoForm.addEventListener("submit", (e) => {
-			e.preventDefault();
+			userInfoForm.addEventListener("submit", (e) => {
+				e.preventDefault();
 
-			userInfoFormData = new FormData(userInfoForm);
-			const player1Name = userInfoFormData.get("player1_name");
-			const player1Type = userInfoFormData.get("player1_type");
-			const player2Name = userInfoFormData.get("player2_name");
-			const player2Type = userInfoFormData.get("player2_type");
+				const userInfoFormData = new FormData(userInfoForm);
+				const player1Name = userInfoFormData.get("player1_name");
+				const player1Type = userInfoFormData.get("player1_type");
+				const player2Name = userInfoFormData.get("player2_name");
+				const player2Type = userInfoFormData.get("player2_type");
 
-			players.push(CreatePlayer(player1Name, "O", "human"));
-			players.push(CreatePlayer(player2Name, "X", "bot"));
+				players.push(
+					player1Type === "human"
+						? CreatePlayer(player1Name, "O", player1Type)
+						: CreateBot(player1Name, "O", player1Type)
+				);
+				players.push(
+					player2Type === "human"
+						? CreatePlayer(player2Name, "X", player2Type)
+						: CreateBot(player2Name, "X", player2Type)
+				);
 
-			currentPlayer = players[0];
+				currentPlayer = players[0];
 
-			console.log(`P1: ${player1Name}`);
-			console.log(`P1 Type: ${player1Type}`);
-			console.log(`P2: ${player2Name}`);
-			console.log(`P2 Type: ${player2Type}`);
-		});
+				ScreenController.initGameBoardComponent();
+				ScreenController.updateGameInfo();
+			});
+		}
 	}
 
-	function handleRound() {
-		currentPlayer.playRound();
+	function handleRound(clickedCellLocation) {
+		currentPlayer.playRound(clickedCellLocation);
 
 		checkPatternForWinnerOrTie();
 
@@ -170,6 +179,7 @@ const GameController = (function () {
 
 	// Data Fetching Methods
 	const getCurrentPlayer = () => currentPlayer;
+	const getPlayer = (playerNo) => players[playerNo - 1];
 	const getMovesMade = () => movesMade;
 	//
 
@@ -184,17 +194,69 @@ const GameController = (function () {
 		addMovesMade,
 		getMovesMade,
 		resetGame,
+		getPlayer,
+	};
+})();
+
+const ScreenController = (function () {
+	const gameBoardComponent = document.querySelector(".gameboard-component");
+	const gameBoard = document.querySelector(".gameboard");
+	const userInfoForm = document.querySelector(".user-info-form");
+	const pageHeader = document.querySelector("header");
+	const currentPlayerName = document.querySelector(".current-player-name");
+	const currentPlayerMarker = document.querySelector(".current-player-marker");
+	const player1Name = document.querySelector(".player1-name");
+	const player2Name = document.querySelector(".player2-name");
+
+	function initGameBoardComponent() {
+		pageHeader.classList.add("game-start");
+		userInfoForm.style.display = "none";
+		gameBoardComponent.style.display = "flex";
+
+		for (let cell of gameBoard.children) {
+			cell.addEventListener("click", (e) => {
+				GameController.handleRound(e.target.dataset.cellLocation);
+
+				updateGameBoardValues();
+				updateGameInfo();
+			});
+		}
+	}
+
+	function updateGameInfo() {
+		currentPlayerName.textContent = `${GameController.getCurrentPlayer().getName()}'s`;
+		currentPlayerMarker.textContent =
+			GameController.getCurrentPlayer().getMarker();
+		player1Name.textContent = GameController.getPlayer(1).getName();
+		player2Name.textContent = GameController.getPlayer(2).getName();
+	}
+
+	function updateGameBoardValues() {
+		const boardResult = Gameboard.getBoardResult().flat();
+
+		for (let i = 0; i < boardResult.length; i++) {
+			const cellValueContainer = document.createElement("span");
+			if (boardResult[i] === "X" || boardResult[i] === "O") {
+				cellValueContainer.textContent = boardResult[i];
+
+				// Check if the Board Cell already has marker inside it
+				if (gameBoard.children[i].children.length === 0) {
+					gameBoard.children[i].append(cellValueContainer);
+				}
+			}
+		}
+	}
+
+	return {
+		initGameBoardComponent,
+		updateGameInfo,
 	};
 })();
 
 // Object that will handle the Player properties
 function CreatePlayer(name, marker, playerType) {
-	function playRound() {
-		// Prompt user for the position of his/her move
-		const [moveRowPosition, moveColumnPosition] = window
-			.prompt("Enter cell position: (<row><column>)")
-			.split("")
-			.map(Number);
+	function playRound(clickedCellLocation) {
+		const [moveRowPosition, moveColumnPosition] = clickedCellLocation;
 
 		console.log(moveRowPosition, moveColumnPosition);
 

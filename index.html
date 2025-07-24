@@ -26,6 +26,9 @@
 			href="./src/assets/stylesheets/index.css" />
 		<link
 			rel="stylesheet"
+			href="./src/assets/stylesheets/pages/game.css" />
+		<link
+			rel="stylesheet"
 			href="./src/assets/stylesheets/colors/light.css" />
 
 		<link
@@ -90,7 +93,8 @@
 						type="text"
 						name="player1_name"
 						id="player1_name"
-						placeholder="Enter your display name" />
+						placeholder="Enter your display name"
+						required />
 				</div>
 				<div>
 					<div class="name-label">
@@ -127,7 +131,8 @@
 						type="text"
 						name="player2_name"
 						id="player2_name"
-						placeholder="Enter your display name" />
+						placeholder="Enter your display name"
+						required />
 				</div>
 			</fieldset>
 			<button
@@ -136,5 +141,37 @@
 				Start Game
 			</button>
 		</form>
+
+		<main class="gameboard-component">
+			<div class="players-stats">
+				<p>
+					<span
+						data-active="true"
+						class="material-symbols-outlined person-icon">
+						person
+					</span>
+					<span><span class="player1-name">Yves</span> - 0</span>
+				</p>
+				<p>
+					<span>0 - <span class="player2-name">Bot</span></span>
+					<span class="material-symbols-outlined robot-icon"> robot_2 </span>
+				</p>
+			</div>
+			<div class="gameboard">
+				<div data-cell-location="00"></div>
+				<div data-cell-location="01"></div>
+				<div data-cell-location="02"></div>
+				<div data-cell-location="10"></div>
+				<div data-cell-location="11"></div>
+				<div data-cell-location="12"></div>
+				<div data-cell-location="20"></div>
+				<div data-cell-location="21"></div>
+				<div data-cell-location="22"></div>
+			</div>
+			<div class="active-player-display">
+				<h2><span class="current-player-name">Yves</span> turn</h2>
+				<p class="current-player-marker">O</p>
+			</div>
+		</main>
 	</body>
 </html>
