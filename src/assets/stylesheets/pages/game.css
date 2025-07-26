@@ -14,12 +14,12 @@ body > header.game-start {
 	padding: 1rem;
 }
 
-body > header.game-start > img {
+header.game-start > img {
 	width: 4rem;
 	height: auto;
 }
 
-body > header.game-start > h1 {
+header.game-start > h1 {
 	font-size: 1.5rem;
 }
 
@@ -36,7 +36,7 @@ body > main {
 	display: none;
 }
 
-body > main > .players-stats {
+main > .players-stats {
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
@@ -54,7 +54,7 @@ span.robot-icon {
 	color: var(--tertiary);
 }
 
-body > main > .gameboard {
+main > .gameboard {
 	height: 300px;
 	width: 300px;
 
@@ -81,12 +81,77 @@ main > .active-player-display {
 	margin-top: 1rem;
 }
 
-main > .active-player-display > h2 {
+.active-player-display > h2 {
 	font-weight: normal;
 	font-size: 1.25rem;
 }
 
-main > .active-player-display > p {
+.active-player-display > p {
 	font-size: 6rem;
 }
+
+body > dialog#game-result-modal {
+	width: 80dvh;
+	padding: 1rem;
+	border-radius: 0.5rem;
+}
+
+dialog#game-result-modal::backdrop {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+dialog#game-result-modal > *:nth-child(2) {
+	margin: 2rem 0;
+}
+
+dialog#game-result-modal > h2 {
+	font-size: 2.5rem;
+	text-align: center;
+}
+
+dialog#game-result-modal > .final-result-stats {
+	display: flex;
+	justify-content: space-between;
+}
+
+.final-result-stats > p {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	gap: 0.25rem;
+}
+
+.final-result-stats > p,
+.final-result-stats > p span {
+	font-size: 1.25rem;
+}
+
+dialog#game-result-modal > .result-modal-buttons {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.result-modal-buttons > button:first-child,
+.result-modal-buttons > button:last-child {
+	padding: 0.75rem 0;
+	border-radius: 0.5rem;
+	width: 100%;
+	cursor: pointer;
+}
+
+.result-modal-buttons > button:first-child {
+	border: 2px solid var(--primary);
+	background-color: inherit;
+	color: var(--primary);
+}
+
+.result-modal-buttons > button:last-child {
+	border: 2px solid var(--primary);
+	background-color: var(--primary);
+	color: var(--on-primary);
+}
+
 /***************/

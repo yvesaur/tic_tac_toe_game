@@ -2,6 +2,7 @@
 
 .light {
 	--primary: #39693b;
+	--on-primary: #ffffff;
 	--primary-container: #baf0b6;
 	--on-primary-container: #215025;
 

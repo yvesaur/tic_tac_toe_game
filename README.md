@@ -13,13 +13,23 @@ A Tic-tac-toe game implemented in web using modular design pattern (IIFEs and Fa
 - Build an AI player for the Tic-tac-toe ✅
   - Delay 1 sec for decision (UX reasons)
   - Bot should not make a move that already happened ✅
-- Create an object that will handle the display/DOM logic of the game
-  - Board UI
-  - User/s interactivity with the board to put X and O on the cells
-  - Allow users to put names
-  - Start/restart game button
-  - Display results
+- Create an object that will handle the display/DOM logic of the game ✅
+  - Board UI ✅
+  - User/s interactivity with the board to put X and O on the cells ✅
+  - Allow users to put names ✅
+  - Start/restart game button ✅
+  - Display results ✅
 - Create UI pages
+
   - Start Game Page (Home page) ✅
   - Game page ✅
-  - Dialog Modal to display results
+  - Dialog Modal to display results ✅
+
+- Responsiveness
+  - Mobile ✅
+  - Tablet
+  - Desktop
+
+## BUG
+
+- When the game resets, and the user hits a cell the warning for "Cell already has a value" shows even when it is empty.
