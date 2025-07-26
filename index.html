@@ -53,6 +53,7 @@
 				alt="Website logo" />
 			<h1>Tic-tac-toe</h1>
 		</header>
+
 		<form
 			autocomplete="off"
 			action="./src/pages/game.html"
@@ -150,10 +151,10 @@
 						class="material-symbols-outlined person-icon">
 						person
 					</span>
-					<span><span class="player1-name">Yves</span> - 0</span>
+					<span class="player1-name-wins">Yves - 0</span>
 				</p>
 				<p>
-					<span>0 - <span class="player2-name">Bot</span></span>
+					<span class="player2-name-wins">0 - Bot</span>
 					<span class="material-symbols-outlined robot-icon"> robot_2 </span>
 				</p>
 			</div>
@@ -173,5 +174,26 @@
 				<p class="current-player-marker">O</p>
 			</div>
 		</main>
+
+		<dialog id="game-result-modal">
+			<h2>🏆 P1 Won!</h2>
+			<div class="final-result-stats">
+				<p>
+					<span
+						data-active="true"
+						class="material-symbols-outlined person-icon">
+						person
+					</span>
+					<span class="player1-win-stat">Yves - 0</span>
+				</p>
+				<p>
+					<span class="player2-win-stat">0 - Bot</span>
+					<span class="material-symbols-outlined robot-icon"> robot_2 </span>
+				</p>
+			</div>
+			<div class="result-modal-buttons">
+				<button>Reset Game</button><button>Play Again</button>
+			</div>
+		</dialog>
 	</body>
 </html>

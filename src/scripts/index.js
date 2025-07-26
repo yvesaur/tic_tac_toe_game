@@ -22,7 +22,7 @@ const Gameboard = (function () {
 	}
 
 	// Data Fetching Methods
-	const getBoard = () => board;
+	const getBoard = () => board[0][0].getValue();
 
 	const getBoardResult = () => {
 		return board.map((row) => row.map((cell) => cell.getValue())); // Get board with updated data
@@ -39,8 +39,6 @@ const Gameboard = (function () {
 			boardRowPatterns.map((row, i) => row[i]), // Diagonal pattern values
 			boardRowPatterns.map((row, i) => row[boardLength - 1 - i]), // Anti-diagonal pattern values
 		];
-
-		console.table(boardRowPatterns);
 
 		return [
 			...boardRowPatterns,
@@ -98,20 +96,20 @@ const GameController = (function () {
 				e.preventDefault();
 
 				const userInfoFormData = new FormData(userInfoForm);
-				const player1Name = userInfoFormData.get("player1_name");
+				const player1NameWins = userInfoFormData.get("player1_name");
 				const player1Type = userInfoFormData.get("player1_type");
-				const player2Name = userInfoFormData.get("player2_name");
+				const player2NameWins = userInfoFormData.get("player2_name");
 				const player2Type = userInfoFormData.get("player2_type");
 
 				players.push(
 					player1Type === "human"
-						? CreatePlayer(player1Name, "O", player1Type)
-						: CreateBot(player1Name, "O", player1Type)
+						? CreatePlayer(player1NameWins, "O", player1Type)
+						: CreateBot(player1NameWins, "O", player1Type)
 				);
 				players.push(
 					player2Type === "human"
-						? CreatePlayer(player2Name, "X", player2Type)
-						: CreateBot(player2Name, "X", player2Type)
+						? CreatePlayer(player2NameWins, "X", player2Type)
+						: CreateBot(player2NameWins, "X", player2Type)
 				);
 
 				currentPlayer = players[0];
@@ -125,9 +123,12 @@ const GameController = (function () {
 	function handleRound(clickedCellLocation) {
 		currentPlayer.playRound(clickedCellLocation);
 
+		ScreenController.updateGameBoardValues();
+
 		checkPatternForWinnerOrTie();
 
 		switchCurrentPlayer();
+		ScreenController.updateGameInfo();
 	}
 
 	function switchCurrentPlayer() {
@@ -154,9 +155,7 @@ const GameController = (function () {
 			);
 
 			if (isWinnerPatternFound) {
-				console.log(getCurrentPlayer().getName() + " won.");
-				console.log("Game will now reset.");
-				return resetGame();
+				ScreenController.displayResults((doesPlayerWon = true));
 			}
 		}
 
@@ -164,17 +163,38 @@ const GameController = (function () {
 		if (movesMade.length === 9) {
 			console.log("It's a tie. No one won.");
 			console.log("Game will now reset.");
-			resetGame();
+			ScreenController.displayResults((doesPlayerWon = false));
 		}
 	}
 
 	function addMovesMade(cellPosition) {
-		movesMade.push(cellPosition);
+		if (isPlayerTurnCompleted) {
+			movesMade.push(cellPosition);
+		}
 	}
 
 	function resetGame() {
+		const pageHeader = document.querySelector("header");
+		const gameBoardComponent = document.querySelector(".gameboard-component");
+		const userInfoForm = document.querySelector(".user-info-form");
+
 		Gameboard.clearBoardValues();
-		movesMade.length = 0; // Clear all the moves made;
+		ScreenController.updateGameBoardValues();
+
+		movesMade.length = 0;
+		players.length = 0;
+
+		pageHeader.classList.remove("game-start");
+		userInfoForm.style.display = "block";
+		userInfoForm.reset();
+		gameBoardComponent.style.display = "none";
+	}
+
+	function playAgain() {
+		Gameboard.clearBoardValues();
+		ScreenController.updateGameBoardValues();
+
+		movesMade.length = 0;
 	}
 
 	// Data Fetching Methods
@@ -195,30 +215,34 @@ const GameController = (function () {
 		getMovesMade,
 		resetGame,
 		getPlayer,
+		playAgain,
 	};
 })();
 
 const ScreenController = (function () {
+	const pageHeader = document.querySelector("header");
+
 	const gameBoardComponent = document.querySelector(".gameboard-component");
 	const gameBoard = document.querySelector(".gameboard");
+
 	const userInfoForm = document.querySelector(".user-info-form");
-	const pageHeader = document.querySelector("header");
 	const currentPlayerName = document.querySelector(".current-player-name");
 	const currentPlayerMarker = document.querySelector(".current-player-marker");
-	const player1Name = document.querySelector(".player1-name");
-	const player2Name = document.querySelector(".player2-name");
+	const player1NameWins = document.querySelector(".player1-name-wins");
+	const player2NameWins = document.querySelector(".player2-name-wins");
+
+	const gameResultModal = document.getElementById("game-result-modal");
 
 	function initGameBoardComponent() {
 		pageHeader.classList.add("game-start");
 		userInfoForm.style.display = "none";
 		gameBoardComponent.style.display = "flex";
 
+		updateGameInfo();
+
 		for (let cell of gameBoard.children) {
 			cell.addEventListener("click", (e) => {
 				GameController.handleRound(e.target.dataset.cellLocation);
-
-				updateGameBoardValues();
-				updateGameInfo();
 			});
 		}
 	}
@@ -227,8 +251,12 @@ const ScreenController = (function () {
 		currentPlayerName.textContent = `${GameController.getCurrentPlayer().getName()}'s`;
 		currentPlayerMarker.textContent =
 			GameController.getCurrentPlayer().getMarker();
-		player1Name.textContent = GameController.getPlayer(1).getName();
-		player2Name.textContent = GameController.getPlayer(2).getName();
+		player1NameWins.textContent = `${GameController.getPlayer(
+			1
+		).getName()} - ${GameController.getPlayer(1).getWins()}`;
+		player2NameWins.textContent = `${GameController.getPlayer(
+			2
+		).getWins()} - ${GameController.getPlayer(2).getName()}`;
 	}
 
 	function updateGameBoardValues() {
@@ -236,29 +264,75 @@ const ScreenController = (function () {
 
 		for (let i = 0; i < boardResult.length; i++) {
 			const cellValueContainer = document.createElement("span");
-			if (boardResult[i] === "X" || boardResult[i] === "O") {
+			if (["X", "O"].includes(boardResult[i])) {
 				cellValueContainer.textContent = boardResult[i];
 
 				// Check if the Board Cell already has marker inside it
 				if (gameBoard.children[i].children.length === 0) {
 					gameBoard.children[i].append(cellValueContainer);
 				}
+			} else {
+				gameBoard.children[i].innerHTML = "";
 			}
 		}
 	}
 
+	function displayResults(doesPlayerWon) {
+		gameResultModal.showModal();
+
+		const playerWon = document.querySelector("#game-result-modal > h2");
+		const player1WinStat = document.querySelector(".player1-win-stat");
+		const player2WinStat = document.querySelector(".player2-win-stat");
+
+		const resetGameButton = document.querySelector(
+			".result-modal-buttons > button:first-child"
+		);
+		const playAgainButton = document.querySelector(
+			".result-modal-buttons > button:last-child"
+		);
+
+		const playerWinText = `🏆 ${GameController.getCurrentPlayer().getName()} Won!`;
+		const playersTieText = "It's a tie.";
+		playerWon.textContent = doesPlayerWon ? playerWinText : playersTieText;
+
+		if (doesPlayerWon) {
+			playerWon.textContent = playerWinText;
+			GameController.getCurrentPlayer().addWin();
+		} else {
+		}
+
+		player1WinStat.textContent = `${GameController.getCurrentPlayer().getName()} - ${GameController.getCurrentPlayer().getWins()}`;
+		player2WinStat.textContent = `${GameController.getPlayer(
+			2
+		).getWins()} - ${GameController.getCurrentPlayer().getName()}`;
+
+		resetGameButton.addEventListener("click", () => {
+			GameController.resetGame();
+			gameResultModal.close();
+		});
+
+		playAgainButton.addEventListener("click", () => {
+			GameController.playAgain();
+			gameResultModal.close();
+		});
+	}
+
+	// gameResultModal.showModal();
+
 	return {
 		initGameBoardComponent,
 		updateGameInfo,
+		updateGameBoardValues,
+		displayResults,
 	};
 })();
 
 // Object that will handle the Player properties
 function CreatePlayer(name, marker, playerType) {
+	let wins = 0;
+
 	function playRound(clickedCellLocation) {
 		const [moveRowPosition, moveColumnPosition] = clickedCellLocation;
-
-		console.log(moveRowPosition, moveColumnPosition);
 
 		Gameboard.putMarkerOnBoard(
 			getMarker(),
@@ -269,23 +343,59 @@ function CreatePlayer(name, marker, playerType) {
 		GameController.addMovesMade(`${moveRowPosition}${moveColumnPosition}`);
 	}
 
+	function addWin() {
+		wins++;
+	}
+
+	function resetWins() {
+		wins = 0;
+	}
+
 	// Data Fetching Methods
 	const getName = () => name;
 	const getMarker = () => marker;
 	const getPlayerType = () => playerType;
+	const getWins = () => wins;
 	//
 
-	return { getName, getMarker, getPlayerType, playRound };
+	return {
+		getName,
+		getMarker,
+		getPlayerType,
+		playRound,
+		addWin,
+		resetWins,
+		getWins,
+	};
 }
 
 // Object that will handle the Bot properties
 function CreateBot(name, marker, playerType) {
+	let win = 0;
 	// Inherit similar values/methods to Player object
-	const { getName, getMarker, getPlayerType } = CreatePlayer(
-		name,
-		marker,
-		playerType
-	);
+	const { getName, getMarker, getPlayerType, addWin, resetWins, getWins } =
+		CreatePlayer(name, marker, playerType);
+
+	function initMoveObserver() {
+		const currentPlayerMarkerDisplay = document.querySelector(
+			".current-player-marker"
+		);
+		const moveObserver = new MutationObserver((mutations) => {
+			mutations.forEach(() => {
+				if (GameController.getCurrentPlayer().getPlayerType() === "bot") {
+					setTimeout(() => {
+						GameController.handleRound();
+					}, 1000); // delay for 1000ms = 1 second
+				}
+			});
+		});
+
+		moveObserver.observe(currentPlayerMarkerDisplay, {
+			childList: true,
+			characterData: true,
+			subtree: true,
+		});
+	}
 
 	function playRound() {
 		const movesMade = GameController.getMovesMade();
@@ -293,17 +403,12 @@ function CreateBot(name, marker, playerType) {
 		let [botMoveRowPosition, botMoveColumnPosition] = generateRandomMove(2);
 		let isMoveUnique = false;
 
-		console.log(GameController.getMovesMade());
-
 		// This will iterate until Bot generated move is unique
 		do {
 			let existingMoveCompareResults = [];
 
 			for (let i = 0; i < movesMade.length; i++) {
 				// Compare the current bot move to all the moves made
-				console.log(
-					movesMade[i] + " = " + `${botMoveRowPosition}${botMoveColumnPosition}`
-				);
 				if (movesMade[i] === `${botMoveRowPosition}${botMoveColumnPosition}`) {
 					existingMoveCompareResults.push(true);
 				} else {
@@ -339,7 +444,17 @@ function CreateBot(name, marker, playerType) {
 		];
 	}
 
-	return { getName, getMarker, getPlayerType, playRound };
+	initMoveObserver();
+
+	return {
+		getName,
+		getMarker,
+		getPlayerType,
+		playRound,
+		addWin,
+		resetWins,
+		getWins,
+	};
 }
 
 // Object that will handle the individual Cells of the Gameboard
@@ -351,6 +466,7 @@ function Cell() {
 			value = playerMarker;
 			GameController.confirmPlayerTurn(true);
 		} else {
+			console.log("CURRENT CELL VALUE: " + value);
 			window.alert("Cell already has a marker. Please try again.");
 			GameController.confirmPlayerTurn(false);
 		}

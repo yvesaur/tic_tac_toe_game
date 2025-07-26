@@ -27,6 +27,12 @@ fieldset {
 	margin: 0;
 	min-inline-size: 0; /* helps reset width in some browsers */
 }
+
+dialog {
+	border: none;
+	outline: none;
+	padding: 0;
+}
 /***************/
 
 /**** MOBILE ****/
