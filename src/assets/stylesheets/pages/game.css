@@ -155,3 +155,32 @@ dialog#game-result-modal > .result-modal-buttons {
 }
 
 /***************/
+
+/* Tablet (≥ 640px) */
+@media (min-width: 640px) {
+	/* Tablet styles */
+	body > header,
+	body > main {
+		width: fit-content;
+	}
+
+	body > dialog#game-result-modal {
+		width: 50%;
+	}
+}
+
+/* Small Laptop (≥ 768px) */
+@media (min-width: 768px) {
+	/* Small laptop styles */
+	body > dialog#game-result-modal {
+		width: 40%;
+	}
+}
+
+/* Large Desktop / Wide screens (≥ 1280px) */
+@media (min-width: 1280px) {
+	/* Large desktop styles */
+	body > dialog#game-result-modal {
+		width: 30%;
+	}
+}

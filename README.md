@@ -52,4 +52,4 @@ A simple yet complete **Tic Tac Toe** game built for the web using **Single Page
 
 ### BUG REPORT
 
-1. When the game resets, and the user hits a cell the warning for "Cell already has a value" shows even when it is empty.
+1. When the game resets, and the user hits a cell the warning for "Cell already has a value" shows even when it is empty. (FIXED)

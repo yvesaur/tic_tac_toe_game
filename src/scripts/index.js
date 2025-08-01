@@ -3,13 +3,15 @@ console.log("Test JS script... working");
 // Object that will handle the board
 const Gameboard = (function () {
 	const boardColumnAndRow = 3;
-	const board = [];
+	let board = [];
 
 	// Generate 2D Array to simulate our game board
-	for (let i = 0; i < boardColumnAndRow; i++) {
-		board[i] = [];
-		for (let j = 0; j < boardColumnAndRow; j++) {
-			board[i].push(Cell());
+	function initBoard() {
+		for (let i = 0; i < boardColumnAndRow; i++) {
+			board[i] = [];
+			for (let j = 0; j < boardColumnAndRow; j++) {
+				board[i].push(Cell());
+			}
 		}
 	}
 
@@ -46,7 +48,8 @@ const Gameboard = (function () {
 			...boardDiagonalPatterns,
 		];
 	};
-	//
+
+	initBoard();
 
 	return {
 		putMarkerOnBoard,
@@ -155,6 +158,8 @@ const GameController = (function () {
 			);
 
 			if (isWinnerPatternFound) {
+				getCurrentPlayer().addWin();
+				console.log("You Won!");
 				ScreenController.displayResults((doesPlayerWon = true));
 			}
 		}
@@ -179,15 +184,16 @@ const GameController = (function () {
 		const userInfoForm = document.querySelector(".user-info-form");
 
 		Gameboard.clearBoardValues();
+		ScreenController.createGameBoardCells();
 		ScreenController.updateGameBoardValues();
 
 		movesMade.length = 0;
 		players.length = 0;
 
 		pageHeader.classList.remove("game-start");
+		gameBoardComponent.style.display = "none";
 		userInfoForm.style.display = "block";
 		userInfoForm.reset();
-		gameBoardComponent.style.display = "none";
 	}
 
 	function playAgain() {
@@ -195,6 +201,7 @@ const GameController = (function () {
 		ScreenController.updateGameBoardValues();
 
 		movesMade.length = 0;
+		// console.log(movesMade);
 	}
 
 	// Data Fetching Methods
@@ -232,6 +239,16 @@ const ScreenController = (function () {
 	const player2NameWins = document.querySelector(".player2-name-wins");
 
 	const gameResultModal = document.getElementById("game-result-modal");
+
+	function createGameBoardCells() {
+		gameBoard.innerHTML = ""; // Clear all cells
+		for (let i = 0; i < 9; i++) {
+			const cell = document.createElement("div");
+			cell.classList.add("cell");
+			cell.dataset.cellLocation = `${Math.floor(i / 3)}${i % 3}`;
+			gameBoard.appendChild(cell);
+		}
+	}
 
 	function initGameBoardComponent() {
 		pageHeader.classList.add("game-start");
@@ -293,18 +310,20 @@ const ScreenController = (function () {
 
 		const playerWinText = `🏆 ${GameController.getCurrentPlayer().getName()} Won!`;
 		const playersTieText = "It's a tie.";
-		playerWon.textContent = doesPlayerWon ? playerWinText : playersTieText;
+		// playerWon.textContent = doesPlayerWon ? playerWinText : playersTieText;
 
 		if (doesPlayerWon) {
 			playerWon.textContent = playerWinText;
-			GameController.getCurrentPlayer().addWin();
 		} else {
+			playerWon.textContent = playersTieText;
 		}
 
-		player1WinStat.textContent = `${GameController.getCurrentPlayer().getName()} - ${GameController.getCurrentPlayer().getWins()}`;
+		player1WinStat.textContent = `${GameController.getPlayer(
+			1
+		).getName()} - ${GameController.getPlayer(1).getWins()}`;
 		player2WinStat.textContent = `${GameController.getPlayer(
 			2
-		).getWins()} - ${GameController.getCurrentPlayer().getName()}`;
+		).getWins()} - ${GameController.getPlayer(2).getName()}`;
 
 		resetGameButton.addEventListener("click", () => {
 			GameController.resetGame();
@@ -324,6 +343,7 @@ const ScreenController = (function () {
 		updateGameInfo,
 		updateGameBoardValues,
 		displayResults,
+		createGameBoardCells,
 	};
 })();
 
@@ -371,7 +391,6 @@ function CreatePlayer(name, marker, playerType) {
 
 // Object that will handle the Bot properties
 function CreateBot(name, marker, playerType) {
-	let win = 0;
 	// Inherit similar values/methods to Player object
 	const { getName, getMarker, getPlayerType, addWin, resetWins, getWins } =
 		CreatePlayer(name, marker, playerType);
@@ -466,7 +485,6 @@ function Cell() {
 			value = playerMarker;
 			GameController.confirmPlayerTurn(true);
 		} else {
-			console.log("CURRENT CELL VALUE: " + value);
 			window.alert("Cell already has a marker. Please try again.");
 			GameController.confirmPlayerTurn(false);
 		}
