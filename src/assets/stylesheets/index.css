@@ -107,3 +107,30 @@ form > .start-game-button {
 }
 
 /***************/
+
+/* Tablet (≥ 640px) */
+@media (min-width: 640px) {
+	/* Tablet styles */
+	body {
+		width: 60dvw;
+		margin: 0 auto;
+	}
+}
+
+/* Small Laptop (≥ 768px) */
+@media (min-width: 768px) {
+	/* Small laptop styles */
+	body {
+		width: 50dvw;
+		margin: 0 auto;
+	}
+}
+
+/* Large Desktop / Wide screens (≥ 1280px) */
+@media (min-width: 1280px) {
+	/* Large desktop styles */
+	body {
+		width: 30dvw;
+		margin: 0 auto;
+	}
+}
