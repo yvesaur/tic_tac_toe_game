@@ -3,7 +3,7 @@ console.log("Test JS script... working");
 // Object that will handle the board
 const Gameboard = (function () {
 	const boardColumnAndRow = 3;
-	let board = [];
+	const board = [];
 
 	// Generate 2D Array to simulate our game board
 	function initBoard() {
@@ -31,15 +31,13 @@ const Gameboard = (function () {
 	};
 
 	const getAllBoardPatterns = () => {
-		const boardLength = getBoard().length;
-
 		const boardRowPatterns = getBoardResult();
 		const boardColumnPatterns = [0, 1, 2].map(
 			(colIndex) => boardRowPatterns.map((row) => row[colIndex]) // Get the column pattern values of the board (top to bottom)
 		);
 		const boardDiagonalPatterns = [
-			boardRowPatterns.map((row, i) => row[i]), // Diagonal pattern values
-			boardRowPatterns.map((row, i) => row[boardLength - 1 - i]), // Anti-diagonal pattern values
+			boardRowPatterns.map((row, i) => row[i]), // diagonal
+			boardRowPatterns.map((row, i) => row[boardRowPatterns.length - 1 - i]), // anti-diagonal
 		];
 
 		return [
@@ -65,6 +63,7 @@ const GameController = (function () {
 	const players = [];
 	let currentPlayer;
 	let isPlayerTurnCompleted = false;
+	let isGameOver = false;
 	let movesMade = [];
 
 	function addSubmitListenerToUserInfoForm() {
@@ -129,9 +128,6 @@ const GameController = (function () {
 		ScreenController.updateGameBoardValues();
 
 		checkPatternForWinnerOrTie();
-
-		switchCurrentPlayer();
-		ScreenController.updateGameInfo();
 	}
 
 	function switchCurrentPlayer() {
@@ -145,30 +141,38 @@ const GameController = (function () {
 	}
 
 	function checkPatternForWinnerOrTie() {
+		let isWinnerPatternFound = false;
 		const targetPatternForWin = [1, 2, 3].map(() =>
 			getCurrentPlayer().getMarker()
 		);
 
 		const boardPatterns = Gameboard.getAllBoardPatterns();
 
+		console.log(boardPatterns);
+
 		for (let i = 0; i < boardPatterns.length; i++) {
 			// Compare all of the pattern to the target pattern
-			const isWinnerPatternFound = boardPatterns[i].every(
+			isWinnerPatternFound = boardPatterns[i].every(
 				(cellValue, i) => cellValue === targetPatternForWin[i]
 			);
 
 			if (isWinnerPatternFound) {
-				getCurrentPlayer().addWin();
-				console.log("You Won!");
-				ScreenController.displayResults((doesPlayerWon = true));
+				break;
 			}
 		}
 
-		// Board has been filled up - Tie
-		if (movesMade.length === 9) {
+		if (isWinnerPatternFound) {
+			getCurrentPlayer().addWin();
+			console.log("You Won!");
+			isGameOver = true;
+			return ScreenController.displayResults((doesPlayerWon = true));
+		} else if (movesMade.length === 9 && !isWinnerPatternFound) {
 			console.log("It's a tie. No one won.");
-			console.log("Game will now reset.");
-			ScreenController.displayResults((doesPlayerWon = false));
+			isGameOver = true;
+			return ScreenController.displayResults((doesPlayerWon = false));
+		} else {
+			switchCurrentPlayer();
+			ScreenController.updateGameInfo();
 		}
 	}
 
@@ -189,6 +193,8 @@ const GameController = (function () {
 
 		movesMade.length = 0;
 		players.length = 0;
+		isGameOver = false;
+		isPlayerTurnCompleted = false;
 
 		pageHeader.classList.remove("game-start");
 		gameBoardComponent.style.display = "none";
@@ -197,10 +203,12 @@ const GameController = (function () {
 	}
 
 	function playAgain() {
+		movesMade.length = 0;
+		isPlayerTurnCompleted = false;
+		isGameOver = false;
 		Gameboard.clearBoardValues();
 		ScreenController.updateGameBoardValues();
-
-		movesMade.length = 0;
+		ScreenController.updateGameInfo();
 		// console.log(movesMade);
 	}
 
@@ -208,6 +216,7 @@ const GameController = (function () {
 	const getCurrentPlayer = () => currentPlayer;
 	const getPlayer = (playerNo) => players[playerNo - 1];
 	const getMovesMade = () => movesMade;
+	const getIsGameOver = () => isGameOver;
 	//
 
 	// Initializations
@@ -223,6 +232,7 @@ const GameController = (function () {
 		resetGame,
 		getPlayer,
 		playAgain,
+		getIsGameOver,
 	};
 })();
 
@@ -401,7 +411,10 @@ function CreateBot(name, marker, playerType) {
 		);
 		const moveObserver = new MutationObserver((mutations) => {
 			mutations.forEach(() => {
-				if (GameController.getCurrentPlayer().getPlayerType() === "bot") {
+				if (
+					GameController.getCurrentPlayer().getPlayerType() === "bot" &&
+					!GameController.getIsGameOver()
+				) {
 					setTimeout(() => {
 						GameController.handleRound();
 					}, 1000); // delay for 1000ms = 1 second
